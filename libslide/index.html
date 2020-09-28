@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `libslide` crate."><meta name="keywords" content="rust, rustlang, rust-lang, libslide"><title>libslide - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../libslide/index.html'><div class='logo-container'><img src='https://avatars2.githubusercontent.com/u/49662722?s=400&u=f0bcc9ee748892048588a2907eb3f176b91a1084&v=4' alt='logo'></div></a><p class='location'>Crate libslide</p><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all libslide's items</p></a><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'libslide', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/libslide/lib.rs.html#1-244' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>libslide</a></span></h1><div class='docblock'><p>libslide is the core of slide, implementing the end-to-end processing of a slide program.</p>
+<p>slide is described as a &quot;static expression optimizer&quot;, which can be thought of as rougly equivalent
+to an &quot;expression simplifier&quot;. Both of these terms are ambiguous ideas reasonable people can
+disagree on. For example, depending on the evaluation context, either <code>x ^ 2</code> or <code>x * x</code> may be
+&quot;optimized&quot; form of the same expression.</p>
+<p>slide uses reasonable (operation-reducing) simplification rules to achieve this goal. Recognizing the
+ambiguities described above, slide also hopes to make optimization customizable on the side of the
+user.</p>
+<p>This isn't the only design goal of slide; others include</p>
+<ul>
+<li>Simplification as a platform, where optimization rules are configurable plugins.</li>
+<li>Strong support for environments slide is most used in (e.g. LaTeX and ad-hoc interactive queries).</li>
+<li>Easy integration with text editors and language servers.</li>
+<li>Evaluation of mathematical statements even in ambiguous contexts.</li>
+</ul>
+<p>slide is still far from being complete. Contributions of any kind are warmly welcomed, as they help
+us progress in the achievement of these goals.</p>
+<p>The rest of this document discusses the architecture of slide.</p>
+<h2 id="a-brief-overview-of-slides-architecture" class="section-header"><a href="#a-brief-overview-of-slides-architecture">A brief overview of slide's architecture</a></h2><img src="https://docs.google.com/drawings/d/e/2PACX-1vSguCnT1JCmJeF3NG7o1VYhp8Pqo4Qn093ysYcRRIR_KRVZWbrTALkD2pRPZRqLCZpxvSyuWraZFaUk/pub?w=864&amp;h=432">
+<p>slide's design is very similar to a compiler front end, sans the type checking and ups the partial
+evaluation.</p>
+<p>The parser is a simple, hand-written RD parser designed to produce nice error messages. The parser
+module supports both expressions and <a href="#expression-patterns">expression patterns</a>.</p>
+<p>Given a parsed expression, the evaluator loops application of <a href="#string-rules">string</a> and
+<a href="#function-rules">function rules</a> until no rule further reduces the expression. This is the most
+interesting part of slide, which we discuss in the next section.</p>
+<p>Finally, the simplified expression is emitted. Currently slide supports a few emission strategies,
+and we are interested in adding more.</p>
+<h2 id="evaluator" class="section-header"><a href="#evaluator">Evaluator</a></h2>
+<p>The <code>partial_evaluator</code> module loops the application of simplification rules on an expression until
+a rule no longer reduces an expression.</p>
+<h3 id="kinds-of-simplification-rules" class="section-header"><a href="#kinds-of-simplification-rules">Kinds of simplification rules</a></h3>
+<p>slide supports &quot;string&quot; and &quot;function&quot; rules. String rules are <a href="#expression-patterns">expression
+patterns</a> mappings that describe how the rule should be applied to an
+expression. For example, the string rule</p>
+<pre><code class="language-slide">1 * _a -&gt; _a
+</code></pre>
+<p>says &quot;1 times any expression <code>a</code> yields the expression <code>a</code>&quot;. String rules are applied to an
+expression by pattern matching the ASTs of the LHS of the string rule and the expression to be
+simplified. If the matching is successful, the matches are substituted on the RHS of the string
+rule. As an example, we apply the above rule on several expressions:</p>
+<pre><code class="language-slide">1 * (2 + v) -&gt; (2 + v)
+1 + (2 + v) -&gt; no match!
+(2 + v) * 1 -&gt; no match!
+</code></pre>
+<p>The fact that the third expression fails to match with the rule demonstrates one weakness of string
+rules. Another rule, <code>_a * 1 -&gt; _a</code>, is needed to represent this case. (In practice, slide tries to
+permute the commutativity of an expression to induce the application of string rules written in a
+particular way, but this is not perfect).</p>
+<p>String rules also have no way to represent evaluation. Since they are purely mappings of terms,
+there is no way to describe the operation of addition with a string rule.</p>
+<p>Because of these limitations in string rules, slide also supports function rules. These are
+functions of the form</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ<span class='tooltiptext'>This example is not tested</span></div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
+<span class="kw">fn</span>(<span class="ident">expr</span>: <span class="ident">Expr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Expr</span><span class="op">&gt;</span></pre></div>
+<p>Function rules are much more powerful because they have access to an entire expression tree and can
+perform evaluations, but are responsible for their own pattern matching and more difficult to
+prove correctness for.</p>
+<p>As a summary, string rules are easy to write and inject into a slide program, but are very limited
+in their application. Function rules are more difficult to write and prove correct, but are much
+more flexible.</p>
+<h4 id="function-rule-evaluation-modules" class="section-header"><a href="#function-rule-evaluation-modules">Function rule evaluation modules</a></h4>
+<p>slide-internal function rules may use a number of other modules to aid evaluation. We list the most
+common ones here:</p>
+<ul>
+<li><code>math</code>: the math module is a collection of algorithms used in the evaluation of an expression, like
+polynomial division. This module is often developed independently with the goal of eventual use
+in slide rules. The math module provides shims for converting between <a href="#expression-representation">expression representation</a>
+and the data representations used by the math module's algorithms.</li>
+<li><code>flatten/fold</code>: this module tries to <a href="#normalization">normalize</a> an expression with postconditions
+rules can rely on in their evaluation.</li>
+<li><code>roll/unroll</code>: these are utility functions that unroll an expression into a list of terms, or roll
+a list up into an expression AST.</li>
+</ul>
+<h3 id="normalization" class="section-header"><a href="#normalization">Normalization</a></h3>
+<p>It is useful to normalize expressions in to a consistent form that can be expected by function rules
+(and to some extent string rules). The <code>flatten/fold</code> module provides expression normalization like
+combining like terms, normalizing similar operations (e.g. subtractions become additions), and other
+procedures whose postconditions rules can then rely on.</p>
+<p>Normalization is optional, and should be disabled when a user disables simplification rules used in
+the normalization process.</p>
+<h2 id="expression-representation" class="section-header"><a href="#expression-representation">Expression Representation</a></h2>
+<p>Expressions are primarily represented as interned ASTs. For example, the expression &quot;1 + 1&quot; parses
+to an AST that looks like something like</p>
+<pre><code class="language-slide">(+ &lt;1&gt;@common-1 &lt;1&gt;@common-1)
+</code></pre>
+<p>where <code>&lt;1&gt;@common-1</code> is the expression <code>1</code> held at the example pointer address <code>common-1</code>.</p>
+<p>The point here is that the common expression <code>1</code> is eliminated, and both references to <code>1</code> point to
+the same underlying expression.</p>
+<p>Because expressions are already held in boxed AST nodes, this interning process does not take an
+additional memory hit and provides several advantages, like skipping evaluation passes on identical
+expressions.</p>
+<h2 id="glossary" class="section-header"><a href="#glossary">Glossary</a></h2><h4 id="string-rules" class="section-header"><a href="#string-rules">String rules</a></h4>
+<p>Simplification rules that describe the mapping of an <a href="#expression-patterns">expression pattern</a> in a
+string form. For example,</p>
+<pre><code class="language-slide">1 * _a -&gt; _a
+</code></pre>
+<p>is a string rule that describes the simplification &quot;1 times any expression <code>a</code> yields the expression
+<code>a</code>&quot;.</p>
+<p>String rules are easy to write, but are strict in what they match and cannot express evaluation.</p>
+<h4 id="function-rules" class="section-header"><a href="#function-rules">Function rules</a></h4>
+<p>Function rules are functions with the signature</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ<span class='tooltiptext'>This example is not tested</span></div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore">
+<span class="kw">fn</span>(<span class="ident">expr</span>: <span class="ident">Expr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Expr</span><span class="op">&gt;</span></pre></div>
+<p>Function rules are given an expression and can perform arbitrary evaluation to try to simplify the
+expression. Function rules are responsible for matching the expression themselves.</p>
+<p>Function rules are more difficult to write and prove correct, but are very flexible.</p>
+<h4 id="expressions" class="section-header"><a href="#expressions">Expressions</a></h4>
+<p>Expressions are the inputs to a slide instance. For example, given the expression</p>
+<pre><code class="language-slide">2x + 3 + 4 + x
+</code></pre>
+<p>slide should emit the lowered expression <code>3x + 7</code>.</p>
+<h4 id="expression-patterns" class="section-header"><a href="#expression-patterns">Expression Patterns</a></h4>
+<p>Expression patterns describe the shape of a expression. Expression patterns are used by <a href="#string-rules">string rules</a>
+to describe how a rule should be applied.</p>
+<p>The syntax of expressions and expression patterns is nearly identical, but expression patterns have
+pattern metavariables rather than variables. The following patterns are available:</p>
+<table><thead><tr><th align="left">pattern</th><th align="left">matches</th></tr></thead><tbody>
+<tr><td align="left"><code>#&lt;name&gt;</code></td><td align="left">A constant</td></tr>
+<tr><td align="left"><code>$&lt;name&gt;</code></td><td align="left">A variable</td></tr>
+<tr><td align="left"><code>_&lt;name&gt;</code></td><td align="left">Any expression</td></tr>
+</tbody></table>
+<p>A metavariable can match exactly one expression. This means that if <code>_a</code> matches <code>1 + 2</code>, all other
+references to <code>_a</code> must match <code>1 + 2</code> as well.</p>
+<p>Some examples of expression patterns and matching expressions:</p>
+<table><thead><tr><th>expression pattern</th><th>matches</th></tr></thead><tbody>
+<tr><td><code>1 + #a</code></td><td><code>1 + 5.2</code></td></tr>
+<tr><td><code>#a + $a</code></td><td><code>10 + v</code></td></tr>
+<tr><td><code>_a / $a * _a</code></td><td><code>(9 + 1) / v * (9 + 1)</code></td></tr>
+<tr><td><code>_a + _b * $c * #d</code></td><td><code>(x ^ 2) + (5 / y) * w * 15</code></td></tr>
+</tbody></table>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
+<table><tr><td><code>pub use scanner::<a class="fn" href="../libslide/scanner/fn.scan.html" title="fn libslide::scanner::scan">scan</a>;</code></td></tr><tr><td><code>pub use scanner::<a class="struct" href="../libslide/scanner/types/struct.Token.html" title="struct libslide::scanner::types::Token">Token</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table><tr class='module-item'><td><a class="mod" href="diagnostics/index.html" title='libslide::diagnostics mod'>diagnostics</a></td><td class='docblock-short'><p>libslide's diagnostic module.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="scanner/index.html" title='libslide::scanner mod'>scanner</a></td><td class='docblock-short'><p>Tokenizes slide programs and produces lexing diagnostics.</p>
+</td></tr></table><h2 id='macros' class='section-header'><a href="#macros">Macros</a></h2>
+<table><tr class='module-item'><td><a class="macro" href="macro.intern_str.html" title='libslide::intern_str macro'>intern_str</a></td><td class='docblock-short'><p>Interns a string.</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.parse_asgn.html" title='libslide::parse_asgn macro'>parse_asgn</a></td><td class='docblock-short'><p>Parses an assignment.</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.parse_expr.html" title='libslide::parse_expr macro'>parse_expr</a></td><td class='docblock-short'><p>Parses an expression.</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.parse_stmt.html" title='libslide::parse_stmt macro'>parse_stmt</a></td><td class='docblock-short'><p>Parses a statement.</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.poly.html" title='libslide::poly macro'>poly</a></td><td class='docblock-short'><p>Creates a new [Poly][Poly].</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.rc_expr.html" title='libslide::rc_expr macro'>rc_expr</a></td><td class='docblock-short'><p>Interns an expression.</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.rc_expr_pat.html" title='libslide::rc_expr_pat macro'>rc_expr_pat</a></td><td class='docblock-short'><p>Interns an expression.</p>
+</td></tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table><tr class='module-item'><td><a class="struct" href="struct.EmitConfig.html" title='libslide::EmitConfig struct'>EmitConfig</a></td><td class='docblock-short'><p>Configuration options for emitting a slide grammar.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.Poly.html" title='libslide::Poly struct'>Poly</a></td><td class='docblock-short'><p>A polynomial in integer space Z.
+TODO: Currently, this container only services polynomials with non-negative degrees.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.ProgramContext.html" title='libslide::ProgramContext struct'>ProgramContext</a></td><td class='docblock-short'><p>A context for evaluating a slide program.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.Span.html" title='libslide::Span struct'>Span</a></td><td class='docblock-short'><p>Describes the character span of a substring in a text.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.StmtList.html" title='libslide::StmtList struct'>StmtList</a></td><td class='docblock-short'><p>A list of statements in a slide program.</p>
+</td></tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table><tr class='module-item'><td><a class="enum" href="enum.EmitFormat.html" title='libslide::EmitFormat enum'>EmitFormat</a></td><td class='docblock-short'><p>The format in which a slide grammar should be emitted.</p>
+</td></tr><tr class='module-item'><td><a class="enum" href="enum.ExprPat.html" title='libslide::ExprPat enum'>ExprPat</a></td><td class='docblock-short'><p>A slide expression pattern.</p>
+</td></tr><tr class='module-item'><td><a class="enum" href="enum.Stmt.html" title='libslide::Stmt enum'>Stmt</a></td><td class='docblock-short'><p>A statement in a slide program.</p>
+</td></tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table><tr class='module-item'><td><a class="trait" href="trait.Emit.html" title='libslide::Emit trait'>Emit</a></td><td class='docblock-short'><p>Implements the emission of a type in an [EmitFormat][EmitFormat].</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.Grammar.html" title='libslide::Grammar trait'>Grammar</a></td><td class='docblock-short'><p>Describes a top-level item in the libslide grammar.</p>
+</td></tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table><tr class='module-item'><td><a class="fn" href="fn.evaluate.html" title='libslide::evaluate fn'>evaluate</a></td><td class='docblock-short'><p>Evaluates a list of statements to as simplified a form as possible for each.
+The evaluation may be partial, as some values (like variables) may be unknown.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.lint_expr_pat.html" title='libslide::lint_expr_pat fn'>lint_expr_pat</a></td><td class='docblock-short'><p>Lints a slide <a href="crate::grammar::ExprPat">expression pattern</a>.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.lint_stmt.html" title='libslide::lint_stmt fn'>lint_stmt</a></td><td class='docblock-short'><p>Lints a slide <a href="crate::grammar::StmtList">statement list</a>.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.parse_expression_pattern.html" title='libslide::parse_expression_pattern fn'>parse_expression_pattern</a></td><td class='docblock-short'><p>Parses a tokenized slide expression pattern, emitting the result and any diagnostics.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.parse_statement.html" title='libslide::parse_statement fn'>parse_statement</a></td><td class='docblock-short'><p>Parses a tokenized slide program, emitting the result and any diagnostics.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "libslide";</script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>
