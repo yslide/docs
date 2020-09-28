@@ -173,7 +173,7 @@
 <span class="doccomment">/// [`expand`](VariableExpander::expand).</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// For example, `&quot;a + b&quot;.expand(&quot;a = b + 1&quot;).expand(&quot;b = c&quot;)` would expand to `&quot;c + 1 + c&quot;`.</span>
-<span class="doccomment">/// Compare this to a [`LazyVariableExpander`][LazyVariableExpander].</span>
+<span class="doccomment">/// Compare this to a [`LazyVariableExpander`](self::LazyVariableExpander).</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Note, however, that an `EagerVariableExpander` will not try to expand variables within an</span>
 <span class="doccomment">/// expanded variable definition on the same call to [`expand`](VariableExpander::expand).</span>
@@ -222,7 +222,7 @@
 <span class="doccomment">/// variable definition.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// For example, `&quot;a + b&quot;.expand(&quot;a = b + 1&quot;).expand(&quot;b = c&quot;)` would expand to `&quot;b + 1 + c&quot;`.</span>
-<span class="doccomment">/// Compare this to an [`EagerVariableExpander`][EagerVariableExpander].</span>
+<span class="doccomment">/// Compare this to an [`EagerVariableExpander`](self::EagerVariableExpander).</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Furthermore, the variable definition used by a `LazyVariableExpander` is the last one given via</span>
 <span class="doccomment">/// [`expand`](VariableExpander::expand).</span>

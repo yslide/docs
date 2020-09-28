@@ -321,7 +321,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Assignment</span> {
-    <span class="doccomment">/// Redefines the [`Assignment`][Assignment] with a definition-evaluating function `eval`.</span>
+    <span class="doccomment">/// Redefines `self` with a definition-evaluating function `eval`.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">redefine_with</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">eval</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>(<span class="ident">RcExpr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RcExpr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">rhs</span> <span class="op">=</span> <span class="ident">eval</span>(<span class="self">self</span>.<span class="ident">rhs</span>);
         <span class="self">self</span>

@@ -627,18 +627,18 @@
     }
 }
 
-<span class="doccomment">/// Implements the emission of a type in an [EmitFormat][EmitFormat].</span>
+<span class="doccomment">/// Implements the emission of a type in an [EmitFormat](self::EmitFormat).</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Emit</span>
 <span class="kw">where</span>
     <span class="comment">// These are trivially implementable using `emit_pretty` and `emit_debug`. The easiest way to</span>
     <span class="comment">// do this is with the `fmt_emit_impl` macro.</span>
     <span class="self">Self</span>: <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="op">+</span> <span class="ident">fmt</span>::<span class="ident">Debug</span>,
 {
-    <span class="doccomment">/// Emit `self` with the given [EmitFormat][EmitFormat].</span>
+    <span class="doccomment">/// Emit `self` with the given [EmitFormat](self::EmitFormat).</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// NB: This is a multiplexer of the corresponding `emit_` methods present on [Emit][Emit],</span>
-    <span class="doccomment">/// except for [EmitFormat::Latex][EmitFormat::Latex], which is emitted via</span>
-    <span class="doccomment">/// [emit_wrapped_latex][Emit::emit_wrapped_latex].</span>
+    <span class="doccomment">/// NB: This is a multiplexer of the corresponding `emit_` methods present on</span>
+    <span class="doccomment">/// [Emit](self::Emit), except for [EmitFormat::Latex](EmitFormat::Latex), which is emitted via</span>
+    <span class="doccomment">/// [emit_wrapped_latex](Emit::emit_wrapped_latex).</span>
     <span class="kw">fn</span> <span class="ident">emit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">form</span>: <span class="ident">EmitFormat</span>, <span class="ident">config</span>: <span class="ident">EmitConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">match</span> <span class="ident">form</span> {
             <span class="ident">EmitFormat</span>::<span class="ident">Pretty</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">emit_pretty</span>(<span class="ident">config</span>),
@@ -648,21 +648,21 @@
         }
     }
 
-    <span class="doccomment">/// Emit `self` with the [pretty emit format][EmitFormat::Pretty]</span>
+    <span class="doccomment">/// Emit `self` with the [pretty emit format](EmitFormat::Pretty)</span>
     <span class="kw">fn</span> <span class="ident">emit_pretty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">config</span>: <span class="ident">EmitConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>;
 
-    <span class="doccomment">/// Emit `self` with the [debug emit format][EmitFormat::Debug]</span>
+    <span class="doccomment">/// Emit `self` with the [debug emit format](EmitFormat::Debug)</span>
     <span class="kw">fn</span> <span class="ident">emit_debug</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_config</span>: <span class="ident">EmitConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:#?}&quot;</span>, <span class="self">self</span>)
     }
 
-    <span class="doccomment">/// Emit `self` with the [s_expression emit format][EmitFormat::SExpression]</span>
+    <span class="doccomment">/// Emit `self` with the [s_expression emit format](EmitFormat::SExpression)</span>
     <span class="kw">fn</span> <span class="ident">emit_s_expression</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">config</span>: <span class="ident">EmitConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>;
 
-    <span class="doccomment">/// Emit `self` with the [LaTeX emit format][EmitFormat::Latex]</span>
+    <span class="doccomment">/// Emit `self` with the [LaTeX emit format](EmitFormat::Latex)</span>
     <span class="kw">fn</span> <span class="ident">emit_latex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">config</span>: <span class="ident">EmitConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>;
 
-    <span class="doccomment">/// Same as [emit_latex][Emit::emit_latex], but wraps the latex code in inline math mode.</span>
+    <span class="doccomment">/// Same as [emit_latex](Emit::emit_latex), but wraps the latex code in inline math mode.</span>
     <span class="kw">fn</span> <span class="ident">emit_wrapped_latex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">config</span>: <span class="ident">EmitConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;${}$&quot;</span>, <span class="self">self</span>.<span class="ident">emit_latex</span>(<span class="ident">config</span>))
     }

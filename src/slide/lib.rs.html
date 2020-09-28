@@ -364,7 +364,7 @@
 <span id="364">364</span>
 <span id="365">365</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="doccomment">//! The slide app. For an overview of slide&#39;s design, see [libslide&#39;s documentation][libslide].</span>
+<span class="doccomment">//! The slide app. For an overview of slide&#39;s design, see [libslide&#39;s documentation](libslide).</span>
 
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">warnings</span>)]</span>
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
@@ -408,14 +408,14 @@
     <span class="kw">pub</span> <span class="ident">parse_only</span>: <span class="ident">bool</span>,
     <span class="doccomment">/// When true, slide will expect the program to be an expression pattern.</span>
     <span class="kw">pub</span> <span class="ident">expr_pat</span>: <span class="ident">bool</span>,
-    <span class="doccomment">/// When is [Some][Option::Some], will explain a diagnostic code.</span>
+    <span class="doccomment">/// When is [Some](Option::Some) diagnostic code, will explain that code.</span>
     <span class="kw">pub</span> <span class="ident">explain_diagnostic</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="doccomment">/// When true, slide emit will be colored.</span>
     <span class="kw">pub</span> <span class="ident">color</span>: <span class="ident">bool</span>,
 }
 
-<span class="doccomment">/// Parses [Opts][Opts] from the command line or given a parser that acts on the clap</span>
-<span class="doccomment">/// [App][clap::App].</span>
+<span class="doccomment">/// Parses [Opts](self::Opts) from the command line or given a parser that acts on the clap</span>
+<span class="doccomment">/// [App](clap::App).</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_opts</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="ident">parser</span>: <span class="ident">P</span>, <span class="ident">color</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Opts</span>, <span class="ident">clap</span>::<span class="ident">Error</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">P</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">FnOnce</span>(<span class="ident">clap</span>::<span class="ident">App</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">clap</span>::<span class="ident">ArgMatches</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">clap</span>::<span class="ident">Error</span><span class="op">&gt;</span>,
@@ -521,9 +521,9 @@
     <span class="kw">pub</span> <span class="ident">page</span>: <span class="ident">bool</span>,
 }
 
-<span class="doccomment">/// Builds a [SlideResult][SlideResult].</span>
+<span class="doccomment">/// Builds a [SlideResult](self::SlideResult).</span>
 <span class="kw">struct</span> <span class="ident">SlideResultBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// File the program is defined in. [None][Option::None] if the program comes from a side</span>
+    <span class="doccomment">/// File the program is defined in. [None](Option::None) if the program comes from a side</span>
     <span class="doccomment">/// channel like stdin.</span>
     <span class="ident">file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Original slide program source code.</span>
@@ -721,8 +721,8 @@
 }
 
 <span class="doccomment">/// Runs slide through a wasm entry point.</span>
-<span class="doccomment">/// `opts` must be a JS object with the same fields as [Opts][Opts].</span>
-<span class="doccomment">/// Returns a JS object with the same fields as [SlideResult][SlideResult].</span>
+<span class="doccomment">/// `opts` must be a JS object with the same fields as [Opts](self::Opts).</span>
+<span class="doccomment">/// Returns a JS object with the same fields as [SlideResult](self::SlideResult).</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wasm&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">wasm_bindgen</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_slide_wasm</span>(<span class="ident">opts</span>: <span class="ident">JsValue</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">JsValue</span> {

@@ -314,7 +314,7 @@
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">EMPTY_STR</span>: <span class="ident">InternedStr</span> <span class="op">=</span> <span class="ident">InternedStr</span>::<span class="ident">intern</span>(<span class="string">&quot;&quot;</span>);
 }
 
-<span class="doccomment">/// An interned [String][std::string::String] type.</span>
+<span class="doccomment">/// An interned [String](std::string::String) type.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InternedStr</span>(<span class="ident">Spur</span>);
 

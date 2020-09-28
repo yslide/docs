@@ -20,17 +20,19 @@
 <span id="20">20</span>
 <span id="21">21</span>
 <span id="22">22</span>
+<span id="23">23</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="doccomment">//! A collection of algorithms used by [evaluation rules][crate::evaluator_rules].</span>
+<span class="doccomment">//! A collection of algorithms used by [evaluation rules][evaluation rules].</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! This module is decoupled from [evaluation rules] and the [partial evaluator] because:</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! - `math`&#39;s algorithms often use representations differing from the libslide</span>
-<span class="doccomment">//!   [grammar][crate::grammar], for which transforming shims are required.</span>
+<span class="doccomment">//!   [grammar][grammar], for which transforming shims are required.</span>
 <span class="doccomment">//! - `math` can be developed independently from `libslide`, with the goal of eventual use in</span>
 <span class="doccomment">//!   evaluator rules.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! [evaluation rules]: crate::evaluator_rules</span>
+<span class="doccomment">//! [grammar]: crate::grammar</span>
 <span class="doccomment">//! [partial_evaluator]: crate::partial_evaluator</span>
 
 <span class="kw">mod</span> <span class="ident">fraction</span>;

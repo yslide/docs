@@ -660,7 +660,7 @@
     }
 }
 
-<span class="doccomment">/// Creates a new [Poly][Poly].</span>
+<span class="doccomment">/// Creates a new [Poly](self::Poly).</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// # Examples:</span>
 <span class="doccomment">///</span>
@@ -680,13 +680,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Poly</span> {
-    <span class="doccomment">/// Creates a new [Poly][Poly] from a vector of coefficients, with the degree of each</span>
+    <span class="doccomment">/// Creates a new [Poly](self::Poly) from a vector of coefficients, with the degree of each</span>
     <span class="doccomment">/// coefficient being its index in the vector.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">vec</span> }.<span class="ident">truncate_zeros</span>()
     }
 
-    <span class="doccomment">/// Creates an empty [Poly][Poly].</span>
+    <span class="doccomment">/// Creates an empty [Poly](self::Poly).</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[]).<span class="ident">truncate_zeros</span>()
     }
@@ -1028,7 +1028,7 @@
         }
     }
 
-    <span class="doccomment">/// Converts a [Poly][Poly] polynomial, relative to some term, into an expression.</span>
+    <span class="doccomment">/// Converts a [Poly](self::Poly) polynomial, relative to some term, into an expression.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// A artificial `span` the elements of the converted expression are derived from must be</span>
     <span class="doccomment">/// provided. In general, `span` should be the span of an expression previously converted the</span>

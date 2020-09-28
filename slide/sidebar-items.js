@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_opts","Parses [Opts][Opts] from the command line or given a parser that acts on the clap [App][clap::App]."],["run_slide","Runs slide end-to-end."]],"struct":[["Opts","Options to run slide with."],["SlideResult","Output of a slide execution."]]});
+initSidebarItems({"fn":[["get_opts","Parses Opts from the command line or given a parser that acts on the clap App."],["run_slide","Runs slide end-to-end."]],"struct":[["Opts","Options to run slide with."],["SlideResult","Output of a slide execution."]]});
