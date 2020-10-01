@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["libslide"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/fmt/trait.Octal.html\" title=\"trait core::fmt::Octal\">Octal</a> for <a class=\"struct\" href=\"libslide/struct.EmitConfig.html\" title=\"struct libslide::EmitConfig\">EmitConfig</a>","synthetic":false,"types":["libslide::emit::EmitConfig"]}];
+implementors["libslide"] = [{"text":"impl Octal for EmitConfig","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
