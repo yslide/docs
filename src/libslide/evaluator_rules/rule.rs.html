@@ -357,7 +357,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">UnresolvedMapping</span> {
     <span class="ident">map</span>: <span class="ident">PatternMap</span>,
-    <span class="ident">unresolved_pats</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RcExprPat</span><span class="op">&gt;</span>,
+    <span class="ident">unresolved_pats</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">UnresolvedMapping</span> {
@@ -430,17 +430,17 @@ Specifically, source &quot;{from}&quot; is missing pattern(s) {pats} present in 
     }
 
     <span class="doccomment">/// Checks a `PatternMap` is resolvable, returning an error if it is not.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">validate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">UnresolvedMapping</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">validate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">UnresolvedMapping</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">unresolved_pats</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">unique_pats</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">to</span>)
             .<span class="ident">difference</span>(<span class="kw-2">&amp;</span><span class="ident">unique_pats</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">from</span>))
-            .<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">clone</span>())
+            .<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">to_string</span>())
             .<span class="ident">collect</span>();
 
         <span class="kw">if</span> <span class="ident">unresolved_pats</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
         }
 
-        <span class="prelude-val">Some</span>(<span class="ident">UnresolvedMapping</span> {
+        <span class="prelude-val">Err</span>(<span class="ident">UnresolvedMapping</span> {
             <span class="ident">map</span>: <span class="self">self</span>.<span class="ident">clone</span>(),
             <span class="ident">unresolved_pats</span>,
         })
@@ -645,7 +645,7 @@ Specifically, source &quot;{from}&quot; is missing pattern(s) {pats} present in 
     <span class="kw">fn</span> <span class="ident">validate_error</span>() {
         <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">PatternMap</span>::<span class="ident">from_str</span>(<span class="string">&quot;_a + $b / #c * 3 -&gt; 1 + $b * #e / _f&quot;</span>)
             .<span class="ident">validate</span>()
-            .<span class="ident">unwrap</span>();
+            .<span class="ident">unwrap_err</span>();
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">err</span>.<span class="ident">to_string</span>(),
@@ -659,7 +659,7 @@ Specifically, source &quot;_a + $b / #c * 3&quot; is missing pattern(s) &quot;#e
     <span class="kw">fn</span> <span class="ident">validate_ok</span>() {
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">PatternMap</span>::<span class="ident">from_str</span>(<span class="string">&quot;_a + $b / #c -&gt; _a + $b&quot;</span>)
             .<span class="ident">validate</span>()
-            .<span class="ident">is_none</span>());
+            .<span class="ident">is_ok</span>());
     }
 }
 </pre></div>
