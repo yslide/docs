@@ -116,6 +116,23 @@
 <span id="113">113</span>
 <span id="114">114</span>
 <span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Diagnostic errors produced by the partial evaluator.</span>
 
@@ -211,7 +228,21 @@
     <span class="doccomment">///</span>
     <span class="doccomment">///The behavior of maybe-incompatible definitions is considered undefined behavior.</span>
     <span class="ident">L0005</span>: <span class="ident">MaybeIncompatibleDefinitions</span> {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a_def</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b_def</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a_def</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b_def</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dep_vars</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {{
+            <span class="kw">let</span> <span class="ident">last</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dep_vars</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dep_vars</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">last</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="string">&quot;variable &quot;</span> } <span class="kw">else</span> { <span class="string">&quot;variables &quot;</span> }.<span class="ident">to_string</span>();
+            <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">var</span>) <span class="kw">in</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dep_vars</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
+                <span class="comment">// Cases:</span>
+                <span class="comment">//   a</span>
+                <span class="comment">//   a and b</span>
+                <span class="comment">//   a, b, and c</span>
+                <span class="ident">dep_vars</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="kw">match</span> <span class="ident">i</span> {
+                    <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\&quot;{}\&quot;&quot;</span>, <span class="ident">var</span>),
+                    <span class="number">1</span> <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="ident">last</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot; and \&quot;{}\&quot;&quot;</span>, <span class="ident">var</span>),
+                    <span class="kw">_</span> <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="ident">last</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;, and \&quot;{}\&quot;&quot;</span>, <span class="ident">var</span>),
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;, \&quot;{}\&quot;&quot;</span>, <span class="ident">var</span>),
+                });
+            }
             <span class="ident">Diagnostic</span>::<span class="ident">span_warn</span>(
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a_def</span>.<span class="ident">span</span>,
                 <span class="macro">format</span><span class="macro">!</span>(<span class="string">r#&quot;Definitions of &quot;{}&quot; may be incompatible&quot;#</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span>),
@@ -227,9 +258,12 @@
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a_def</span>.<span class="ident">rhs</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b_def</span>.<span class="ident">rhs</span>
             ))
             .<span class="ident">with_note</span>(
+                <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;equivalence of the definitions depends on the {}&quot;</span>, <span class="ident">dep_vars</span>)
+            )
+            .<span class="ident">with_note</span>(
                 <span class="string">&quot;there is not enough information to conclude whether the definitions are compatible&quot;</span>
             )
-        }
+        }}
     }
 }
 </pre></div>
