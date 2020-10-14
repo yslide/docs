@@ -233,6 +233,7 @@
 <span id="230">230</span>
 <span id="231">231</span>
 <span id="232">232</span>
+<span id="233">233</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! libslide&#39;s diagnostic module.</span>
 <span class="doccomment">//!</span>
@@ -249,6 +250,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
 
 <span class="doccomment">/// The kind of a slide diagnostic.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DiagnosticKind</span> {
     <span class="doccomment">/// An error diagnostic. Generally, this diagnostic should be emitted for unrecoverable errors.</span>
     <span class="doccomment">/// In other cases, a warning or a note may be more applicable.</span>

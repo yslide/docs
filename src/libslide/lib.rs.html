@@ -246,6 +246,7 @@
 <span id="243">243</span>
 <span id="244">244</span>
 <span id="245">245</span>
+<span id="246">246</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! libslide is the core of slide, implementing the end-to-end processing of a slide program.</span>
 <span class="doccomment">//!</span>
@@ -476,6 +477,7 @@
 
 <span class="kw">mod</span> <span class="ident">partial_evaluator</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">partial_evaluator</span>::<span class="ident">evaluate</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">partial_evaluator</span>::<span class="ident">EvaluationResult</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">partial_evaluator</span>::<span class="ident">PartialEvaluatorErrors</span>;
 
 <span class="kw">mod</span> <span class="ident">evaluator_rules</span>;
