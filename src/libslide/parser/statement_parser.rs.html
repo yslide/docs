@@ -139,6 +139,17 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">errors</span>::<span class="kw-2">*</span>, <span class="ident">Parser</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">Span</span>;
@@ -169,8 +180,17 @@
     }
 
     <span class="kw">fn</span> <span class="ident">parse_stmt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Stmt</span> {
+        <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">naive_bytecount</span>)]</span> <span class="comment">// naiveness is fine, we&#39;re not counting a lot of bytes</span>
+        <span class="kw">let</span> <span class="ident">vw</span> <span class="op">=</span> <span class="self">self</span>
+            .<span class="ident">peek_content</span>()
+            .<span class="ident">as_bytes</span>()
+            .<span class="ident">iter</span>()
+            .<span class="ident">filter</span>(<span class="op">|</span><span class="op">&amp;&amp;</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span> <span class="op">=</span><span class="op">=</span> <span class="string">b&#39;\n&#39;</span>)
+            .<span class="ident">count</span>()
+            .<span class="ident">saturating_sub</span>(<span class="number">1</span>); <span class="comment">// don&#39; count the newline always present between statements</span>
+
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">input</span>().<span class="ident">peek_map_n</span>(<span class="number">2</span>, <span class="op">|</span><span class="ident">tok</span><span class="op">|</span> (<span class="ident">tok</span>.<span class="ident">ty</span>.<span class="ident">clone</span>(), <span class="ident">tok</span>.<span class="ident">span</span>));
-        <span class="kw">match</span> (<span class="ident">next_2</span>.<span class="ident">pop_front</span>(), <span class="ident">next_2</span>.<span class="ident">pop_front</span>()) {
+        <span class="kw">let</span> <span class="ident">kind</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">next_2</span>.<span class="ident">pop_front</span>(), <span class="ident">next_2</span>.<span class="ident">pop_front</span>()) {
             (
                 <span class="prelude-val">Some</span>((<span class="ident">TokenType</span>::<span class="ident">Variable</span>(<span class="ident">name</span>), <span class="kw">_</span>)),
                 <span class="prelude-val">Some</span>((<span class="ident">asgn_ty</span> @ <span class="ident">TokenType</span>::<span class="ident">Equal</span>, <span class="ident">asgn_span</span>)),
@@ -189,7 +209,7 @@
                 };
                 <span class="kw">let</span> <span class="ident">rhs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">expr</span>();
                 <span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> (<span class="ident">lo</span>..<span class="ident">rhs</span>.<span class="ident">span</span>.<span class="ident">hi</span>).<span class="ident">into</span>();
-                <span class="ident">Stmt</span>::<span class="ident">Assignment</span>(<span class="ident">Assignment</span> {
+                <span class="ident">StmtKind</span>::<span class="ident">Assignment</span>(<span class="ident">Assignment</span> {
                     <span class="ident">var</span>: <span class="macro">intern_str</span><span class="macro">!</span>(<span class="ident">name</span>),
                     <span class="ident">asgn_op</span>,
                     <span class="ident">rhs</span>,
@@ -197,13 +217,19 @@
                 })
             }
 
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Stmt</span>::<span class="ident">Expr</span>(<span class="self">self</span>.<span class="ident">expr</span>()),
-        }
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StmtKind</span>::<span class="ident">Expr</span>(<span class="self">self</span>.<span class="ident">expr</span>()),
+        };
+        <span class="ident">Stmt</span>::<span class="ident">new</span>(<span class="ident">kind</span>, <span class="ident">vw</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">parse_pattern</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="ident">String</span>, <span class="ident">span</span>: <span class="ident">Span</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RcExpr</span> {
         <span class="self">self</span>.<span class="ident">push_diag</span>(<span class="macro">IllegalPattern</span><span class="macro">!</span>(<span class="ident">span</span>, <span class="ident">name</span>));
         <span class="macro">rc_expr</span><span class="macro">!</span>(<span class="ident">Expr</span>::<span class="ident">Var</span>(<span class="macro">intern_str</span><span class="macro">!</span>(<span class="ident">name</span>)), <span class="ident">span</span>)
+    }
+
+    <span class="doccomment">/// Returns the full content of the current (peeked) token.</span>
+    <span class="kw">fn</span> <span class="ident">peek_content</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
+        <span class="self">self</span>.<span class="ident">peek</span>().<span class="ident">full_span</span>.<span class="ident">clone</span>().<span class="ident">over</span>(<span class="self">self</span>.<span class="ident">program</span>)
     }
 }
 
@@ -258,11 +284,7 @@
 
     <span class="doccomment">/// Do we have another statement (on a newline)?</span>
     <span class="kw">fn</span> <span class="ident">has_stmt_break</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">peek</span>()
-            .<span class="ident">full_span</span>
-            .<span class="ident">clone</span>()
-            .<span class="ident">over</span>(<span class="self">self</span>.<span class="ident">program</span>)
-            .<span class="ident">contains</span>(<span class="string">&#39;\n&#39;</span>)
+        <span class="self">self</span>.<span class="ident">peek_content</span>().<span class="ident">contains</span>(<span class="string">&#39;\n&#39;</span>)
     }
 }
 

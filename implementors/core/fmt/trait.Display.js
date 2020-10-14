@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["libslide"] = [{"text":"impl Display for TokenType","synthetic":false,"types":[]},{"text":"impl Display for Token","synthetic":false,"types":[]},{"text":"impl Display for StmtList","synthetic":false,"types":[]},{"text":"impl Display for Stmt","synthetic":false,"types":[]},{"text":"impl Display for ExprPat","synthetic":false,"types":[]}];
+implementors["libslide"] = [{"text":"impl Display for TokenType","synthetic":false,"types":[]},{"text":"impl Display for Token","synthetic":false,"types":[]},{"text":"impl Display for StmtList","synthetic":false,"types":[]},{"text":"impl Display for StmtKind","synthetic":false,"types":[]},{"text":"impl Display for Stmt","synthetic":false,"types":[]},{"text":"impl Display for ExprPat","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
