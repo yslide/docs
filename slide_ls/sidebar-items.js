@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["main",""]],"mod":[["services","Provides langauge services for a slide language server."],["shims","Module `diagnostics` converts slide diagnostics to LSP types."]],"struct":[["ProgramInfo",""],["SlideLS","A slide language server."]],"type":[["DocumentRegistry",""]]});

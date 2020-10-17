@@ -282,7 +282,7 @@
     <span class="doccomment">/// The diagnostic kind.</span>
     <span class="kw">pub</span> <span class="ident">kind</span>: <span class="ident">DiagnosticKind</span>,
     <span class="doccomment">/// The diagnostic code.</span>
-    <span class="kw">pub</span> <span class="ident">code</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
     <span class="doccomment">/// Source location for which the diagnostic is applicable.</span>
     <span class="kw">pub</span> <span class="ident">span</span>: <span class="ident">Span</span>,
     <span class="doccomment">/// A summarizing title for the diagnostic.</span>
@@ -318,7 +318,7 @@
         <span class="kw">where</span>
             <span class="ident">S</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Span</span><span class="op">&gt;</span>,
             <span class="ident">M</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-            <span class="ident">C</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+            <span class="ident">C</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span>,
             <span class="ident">N</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
         {
             <span class="ident">Diagnostic</span> {

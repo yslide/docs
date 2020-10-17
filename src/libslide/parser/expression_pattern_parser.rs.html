@@ -83,8 +83,13 @@
 <span id="80">80</span>
 <span id="81">81</span>
 <span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">errors</span>::<span class="kw-2">*</span>, <span class="ident">Parser</span>};
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">errors</span>::<span class="kw-2">*</span>, <span class="ident">ParseResult</span>, <span class="ident">Parser</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">common</span>::<span class="ident">Span</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">diagnostics</span>::{<span class="ident">Diagnostic</span>, <span class="ident">DiagnosticRecord</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">grammar</span>::<span class="kw-2">*</span>;
@@ -92,9 +97,14 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">utils</span>::<span class="ident">PeekIter</span>;
 
 <span class="doccomment">/// Parses a tokenized slide expression pattern, emitting the result and any diagnostics.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Token</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">RcExprPat</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Diagnostic</span><span class="op">&gt;</span>) {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Token</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ParseResult</span><span class="op">&lt;</span><span class="ident">RcExprPat</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">parser</span> <span class="op">=</span> <span class="ident">ExpressionPatternParser</span>::<span class="ident">new</span>(<span class="ident">input</span>);
-    (<span class="ident">parser</span>.<span class="ident">parse</span>(), <span class="ident">parser</span>.<span class="ident">diagnostics</span>)
+    <span class="kw">let</span> <span class="ident">program</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>();
+    <span class="kw">let</span> <span class="ident">diagnostics</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">diagnostics</span>;
+    <span class="ident">ParseResult</span> {
+        <span class="ident">program</span>,
+        <span class="ident">diagnostics</span>,
+    }
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ExpressionPatternParser</span> {

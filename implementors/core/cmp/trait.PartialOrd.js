@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["libslide"] = [{"text":"impl PartialOrd&lt;ExprPat&gt; for ExprPat","synthetic":false,"types":[]},{"text":"impl PartialOrd&lt;Span&gt; for Span","synthetic":false,"types":[]},{"text":"impl PartialOrd&lt;EmitConfig&gt; for EmitConfig","synthetic":false,"types":[]}];
+implementors["libslide"] = [{"text":"impl PartialOrd&lt;RcExpr&gt; for RcExpr","synthetic":false,"types":[]},{"text":"impl PartialOrd&lt;ExprPat&gt; for ExprPat","synthetic":false,"types":[]},{"text":"impl PartialOrd&lt;Expr&gt; for Expr","synthetic":false,"types":[]},{"text":"impl PartialOrd&lt;Span&gt; for Span","synthetic":false,"types":[]},{"text":"impl PartialOrd&lt;EmitConfig&gt; for EmitConfig","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

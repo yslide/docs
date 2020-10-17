@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["hover","Provides hover services for a slide langauge server. See `get_hover_info` for information on returned hover data."]]});

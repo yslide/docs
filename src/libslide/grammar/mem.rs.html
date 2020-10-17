@@ -292,7 +292,6 @@
 <span id="289">289</span>
 <span id="290">290</span>
 <span id="291">291</span>
-<span id="292">292</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides memory-based utilities for slide [Grammar]s, namely interners and reference-counted</span>
 <span class="doccomment">//! objects.</span>
@@ -307,8 +306,7 @@
 <span class="kw">use</span> <span class="ident">lasso</span>::{<span class="ident">Rodeo</span>, <span class="ident">Spur</span>};
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="ident">lazy_static</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Deref</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">RwLock</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
 
 <span class="macro">lazy_static</span><span class="macro">!</span> {
     <span class="doccomment">/// Arena of interned strings.</span>
@@ -391,30 +389,30 @@
     <span class="kw">fn</span> <span class="ident">span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Span</span>;
 }
 
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">make_interner</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">intern_macro</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interner</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {$(
-        <span class="doccomment">/// An interned version of an expression.</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">make_counted</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_macro</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counter</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {$(
+        <span class="doccomment">/// An reference-counted version of an expression.</span>
         <span class="doccomment">///</span>
-        <span class="doccomment">/// NB: interned expressions are equivalent if they point to the same underlying expression,</span>
-        <span class="doccomment">/// even though two interned expressions may have different [span](crate::Span)s.</span>
+        <span class="doccomment">/// NB: counted expressions are equivalent if they point to the same underlying expression,</span>
+        <span class="doccomment">/// even though two counted expressions may have different [span](crate::Span)s.</span>
         <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-        <span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {
+        <span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {
             <span class="doccomment">/// The underlying expression.</span>
-            <span class="ident">expr</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span><span class="op">&gt;</span>,
+            <span class="ident">expr</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span><span class="op">&gt;</span>,
             <span class="doccomment">/// The original span of this expression from an input source code.</span>
-            <span class="doccomment">/// Even though the expression is interned, this span is distinct and serves as a</span>
-            <span class="doccomment">/// backwards-mapping to where the expression originally came from.</span>
-            <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">span</span>: <span class="ident">Span</span>,
+            <span class="doccomment">/// Even though the expression may be shared, this span is distinct and serves</span>
+            <span class="doccomment">/// as a backwards-mapping to where the expression originally came from.</span>
+            <span class="kw">pub</span> <span class="ident">span</span>: <span class="ident">Span</span>,
         }
 
-        <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {
+        <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {
             <span class="doccomment">/// Creates a new reference-counted expression at a span.</span>
             <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">Sp</span><span class="op">&gt;</span>(<span class="ident">expr</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>, <span class="ident">span</span>: <span class="ident">Sp</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
             <span class="kw">where</span>
                 <span class="ident">Sp</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Span</span><span class="op">&gt;</span>
             {
                 <span class="self">Self</span> {
-                    <span class="ident">expr</span>: <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">expr</span>),
+                    <span class="ident">expr</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">expr</span>),
                     <span class="ident">span</span>: <span class="ident">span</span>.<span class="ident">into</span>(),
                 }
             }
@@ -422,29 +420,29 @@
 
         <span class="doccomment">/// Interns an expression.</span>
         <span class="attribute">#[<span class="ident">macro_export</span>]</span>
-        <span class="macro">macro_rules</span><span class="macro">!</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">intern_macro</span> {
+        <span class="macro">macro_rules</span><span class="macro">!</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_macro</span> {
             (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">span</span>: <span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span>::<span class="ident">new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">span</span>)
+                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span>::<span class="ident">new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">span</span>)
             }
         }
 
-        <span class="kw">impl</span> <span class="ident">Grammar</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {}
+        <span class="kw">impl</span> <span class="ident">Grammar</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {}
 
-        <span class="kw">impl</span> <span class="ident">core</span>::<span class="ident">hash</span>::<span class="ident">Hash</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {
+        <span class="kw">impl</span> <span class="ident">core</span>::<span class="ident">hash</span>::<span class="ident">Hash</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {
             <span class="kw">fn</span> <span class="ident">hash</span><span class="op">&lt;</span><span class="ident">H</span>: <span class="ident">core</span>::<span class="ident">hash</span>::<span class="ident">Hasher</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">H</span>) {
                 <span class="self">self</span>.<span class="ident">expr</span>.<span class="ident">hash</span>(<span class="ident">state</span>);
             }
         }
 
-        <span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {
+        <span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {
             <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
                 <span class="self">self</span>.<span class="ident">expr</span>.<span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">expr</span>)
             }
         }
 
-        <span class="kw">impl</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {}
+        <span class="kw">impl</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {}
 
-        <span class="kw">impl</span> <span class="ident">Emit</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {
+        <span class="kw">impl</span> <span class="ident">Emit</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {
             <span class="kw">fn</span> <span class="ident">emit_pretty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">config</span>: <span class="ident">EmitConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
                 <span class="self">self</span>.<span class="ident">as_ref</span>().<span class="ident">emit_pretty</span>(<span class="ident">config</span>)
             }
@@ -458,19 +456,19 @@
             }
         }
 
-        <span class="kw">impl</span> <span class="ident">core</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {
+        <span class="kw">impl</span> <span class="ident">core</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {
             <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">core</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">core</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
                 <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">emit_pretty</span>(<span class="ident">EmitConfig</span>::<span class="ident">default</span>()))
             }
         }
 
-        <span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {
+        <span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {
             <span class="kw">fn</span> <span class="ident">as_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span> {
                 <span class="self">self</span>.<span class="ident">deref</span>()
             }
         }
 
-        <span class="kw">impl</span> <span class="ident">Deref</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {
+        <span class="kw">impl</span> <span class="ident">Deref</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {
             <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">RcExpression</span><span class="op">&gt;</span>::<span class="ident">Inner</span>;
 
             <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Target</span> {
@@ -478,13 +476,13 @@
             }
         }
 
-        <span class="kw">impl</span> <span class="ident">PartialOrd</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {
+        <span class="kw">impl</span> <span class="ident">PartialOrd</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {
             <span class="kw">fn</span> <span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Ordering</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">cmp</span>(<span class="ident">other</span>))
             }
         }
 
-        <span class="kw">impl</span> <span class="ident">Ord</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">interned_struct</span> {
+        <span class="kw">impl</span> <span class="ident">Ord</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">counted_struct</span> {
             <span class="kw">fn</span> <span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Ordering</span> {
                 <span class="self">self</span>.<span class="ident">as_ref</span>().<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">as_ref</span>())
             }
@@ -492,7 +490,7 @@
     )<span class="kw-2">*</span>};
 }
 
-<span class="macro">make_interner</span><span class="macro">!</span> {
+<span class="macro">make_counted</span><span class="macro">!</span> {
     <span class="ident">rc_expr</span>, <span class="ident">Expr</span>, <span class="ident">RcExpr</span>, <span class="ident">EXPR_RODEO</span>
     <span class="ident">rc_expr_pat</span>, <span class="ident">ExprPat</span>, <span class="ident">RcExprPat</span>, <span class="ident">EXPR_PAT_RODEO</span>
 }

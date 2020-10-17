@@ -250,6 +250,33 @@
 <span id="247">247</span>
 <span id="248">248</span>
 <span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Span</span>;
@@ -364,6 +391,14 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">vw</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">vw</span>
     }
+
+    <span class="doccomment">/// Gets the span of the statement.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Span</span> {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">kind</span> {
+            <span class="ident">StmtKind</span>::<span class="ident">Expr</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">e</span>.<span class="ident">span</span>,
+            <span class="ident">StmtKind</span>::<span class="ident">Assignment</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">span</span>,
+        }
+    }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>)]</span>
@@ -383,11 +418,17 @@
     }
 }
 
+<span class="doccomment">/// An assignment.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Assignment</span> {
-    <span class="kw">pub</span> <span class="ident">var</span>: <span class="ident">InternedStr</span>,
+    <span class="doccomment">/// Left hand side of the assignment.</span>
+    <span class="kw">pub</span> <span class="ident">lhs</span>: <span class="ident">RcExpr</span>,
+    <span class="doccomment">/// The assignment operator.</span>
     <span class="kw">pub</span> <span class="ident">asgn_op</span>: <span class="ident">AssignmentOp</span>,
+    <span class="doccomment">/// Right hand side of the assignment.</span>
     <span class="kw">pub</span> <span class="ident">rhs</span>: <span class="ident">RcExpr</span>,
+
+    <span class="doccomment">/// Span of the entire assignment.</span>
     <span class="kw">pub</span> <span class="ident">span</span>: <span class="ident">Span</span>,
 }
 
@@ -399,22 +440,27 @@
     }
 }
 
+<span class="doccomment">/// An expression.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Expr</span> {
+    <span class="doccomment">/// A constant.</span>
     <span class="ident">Const</span>(<span class="ident">f64</span>),
+    <span class="doccomment">/// A variable.</span>
     <span class="ident">Var</span>(<span class="ident">InternedStr</span>),
+    <span class="doccomment">/// A binary expression.</span>
     <span class="ident">BinaryExpr</span>(<span class="ident">BinaryExpr</span><span class="op">&lt;</span><span class="ident">RcExpr</span><span class="op">&gt;</span>),
+    <span class="doccomment">/// A unary expression.</span>
     <span class="ident">UnaryExpr</span>(<span class="ident">UnaryExpr</span><span class="op">&lt;</span><span class="ident">RcExpr</span><span class="op">&gt;</span>),
-    <span class="doccomment">/// An expression wrapped in parentheses</span>
+    <span class="doccomment">/// An expression wrapped in parentheses.</span>
     <span class="ident">Parend</span>(<span class="ident">RcExpr</span>),
-    <span class="doccomment">/// An expression wrapped in brackets</span>
+    <span class="doccomment">/// An expression wrapped in brackets.</span>
     <span class="ident">Bracketed</span>(<span class="ident">RcExpr</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">Grammar</span> <span class="kw">for</span> <span class="ident">Expr</span> {}
 
 <span class="kw">impl</span> <span class="ident">Expr</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">complexity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">complexity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
         <span class="number">1</span> <span class="op">+</span> <span class="kw">match</span> <span class="self">self</span> {
             <span class="self">Self</span>::<span class="ident">Const</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
             <span class="self">Self</span>::<span class="ident">Var</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="number">0</span>,
@@ -428,6 +474,14 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_const</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="self">Self</span>::<span class="ident">Const</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">c</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="doccomment">/// Gets the variable value stored in this expression, if any.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_var</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">InternedStr</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="self">Self</span>::<span class="ident">Var</span>(<span class="ident">v</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">v</span>),
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }

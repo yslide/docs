@@ -247,6 +247,12 @@
 <span id="244">244</span>
 <span id="245">245</span>
 <span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! libslide is the core of slide, implementing the end-to-end processing of a slide program.</span>
 <span class="doccomment">//!</span>
@@ -452,8 +458,10 @@
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">mod</span> <span class="ident">grammar</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">grammar</span>::<span class="ident">collectors</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">grammar</span>::<span class="ident">InternedStr</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">grammar</span>::{<span class="ident">ExprPat</span>, <span class="ident">Grammar</span>, <span class="ident">Stmt</span>, <span class="ident">StmtKind</span>, <span class="ident">StmtList</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">grammar</span>::<span class="ident">StmtVisitor</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">grammar</span>::{<span class="ident">Assignment</span>, <span class="ident">Expr</span>, <span class="ident">ExprPat</span>, <span class="ident">Grammar</span>, <span class="ident">RcExpr</span>, <span class="ident">Stmt</span>, <span class="ident">StmtKind</span>, <span class="ident">StmtList</span>};
 
 <span class="kw">mod</span> <span class="ident">common</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">common</span>::<span class="kw-2">*</span>;
@@ -463,12 +471,14 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">scanner</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">scanner</span>::<span class="ident">scan</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">scanner</span>::<span class="ident">ScanErrors</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">scanner</span>::<span class="ident">ScanResult</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">scanner</span>::<span class="ident">Token</span>;
 
 <span class="kw">mod</span> <span class="ident">parser</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">parser</span>::<span class="ident">parse_expression_pattern</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">parser</span>::<span class="ident">parse_statement</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">parser</span>::<span class="ident">parse_statements</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">parser</span>::<span class="ident">ParseErrors</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">parser</span>::<span class="ident">ParseResult</span>;
 
 <span class="kw">mod</span> <span class="ident">linter</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">linter</span>::<span class="ident">lint_expr_pat</span>;
@@ -476,7 +486,9 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">linter</span>::<span class="ident">LintConfig</span>;
 
 <span class="kw">mod</span> <span class="ident">partial_evaluator</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">partial_evaluator</span>::<span class="ident">build_rules</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">partial_evaluator</span>::<span class="ident">evaluate</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">partial_evaluator</span>::<span class="ident">evaluate_expr</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">partial_evaluator</span>::<span class="ident">EvaluationResult</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">partial_evaluator</span>::<span class="ident">PartialEvaluatorErrors</span>;
 
