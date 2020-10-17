@@ -189,7 +189,6 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
-<span id="189">189</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! The primary libslide IR.</span>
 
@@ -199,12 +198,11 @@
 <span class="kw">mod</span> <span class="ident">expression_pattern</span>;
 <span class="kw">mod</span> <span class="ident">statement</span>;
 <span class="kw">mod</span> <span class="ident">transformer</span>;
-<span class="kw">mod</span> <span class="ident">visitor</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">visit</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">expression_pattern</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">mem</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">statement</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">transformer</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">visitor</span>::<span class="kw-2">*</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">emit</span>::<span class="ident">Emit</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">scanner</span>::<span class="ident">types</span>::{<span class="ident">Token</span>, <span class="ident">TokenType</span>};
