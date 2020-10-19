@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["get_definitions","Returns all definitions of a variable in a program."]]});

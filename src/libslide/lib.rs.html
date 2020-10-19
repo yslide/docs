@@ -253,6 +253,8 @@
 <span id="250">250</span>
 <span id="251">251</span>
 <span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! libslide is the core of slide, implementing the end-to-end processing of a slide program.</span>
 <span class="doccomment">//!</span>
@@ -460,8 +462,10 @@
 <span class="kw">mod</span> <span class="ident">grammar</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">grammar</span>::<span class="ident">collectors</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">grammar</span>::<span class="ident">visit</span>;
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">grammar</span>::<span class="ident">InternedStr</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">grammar</span>::{<span class="ident">Assignment</span>, <span class="ident">Expr</span>, <span class="ident">ExprPat</span>, <span class="ident">Grammar</span>, <span class="ident">RcExpr</span>, <span class="ident">Stmt</span>, <span class="ident">StmtKind</span>, <span class="ident">StmtList</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">grammar</span>::{
+    <span class="ident">Assignment</span>, <span class="ident">BinaryExpr</span>, <span class="ident">Expr</span>, <span class="ident">ExprPat</span>, <span class="ident">Grammar</span>, <span class="ident">InternedStr</span>, <span class="ident">RcExpr</span>, <span class="ident">RcExpression</span>, <span class="ident">Stmt</span>,
+    <span class="ident">StmtKind</span>, <span class="ident">StmtList</span>, <span class="ident">UnaryExpr</span>,
+};
 
 <span class="kw">mod</span> <span class="ident">common</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">common</span>::<span class="kw-2">*</span>;

@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["libslide"] = [{"text":"impl StructuralEq for Span","synthetic":false,"types":[]},{"text":"impl StructuralEq for Poly","synthetic":false,"types":[]},{"text":"impl StructuralEq for EmitConfig","synthetic":false,"types":[]}];
+implementors["libslide"] = [{"text":"impl StructuralEq for InternedStr","synthetic":false,"types":[]},{"text":"impl&lt;E:&nbsp;RcExpression&gt; StructuralEq for BinaryExpr&lt;E&gt;","synthetic":false,"types":[]},{"text":"impl&lt;E:&nbsp;RcExpression&gt; StructuralEq for UnaryExpr&lt;E&gt;","synthetic":false,"types":[]},{"text":"impl StructuralEq for Span","synthetic":false,"types":[]},{"text":"impl StructuralEq for Poly","synthetic":false,"types":[]},{"text":"impl StructuralEq for EmitConfig","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -189,6 +189,15 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! The primary libslide IR.</span>
 
@@ -257,16 +266,21 @@
     }
 }
 
+<span class="doccomment">/// A binary expression.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Hash</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BinaryExpr</span><span class="op">&lt;</span><span class="ident">E</span>: <span class="ident">RcExpression</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// The binary operator.</span>
     <span class="kw">pub</span> <span class="ident">op</span>: <span class="ident">BinaryOperator</span>,
+    <span class="doccomment">/// The left hand side of the binary operator.</span>
     <span class="kw">pub</span> <span class="ident">lhs</span>: <span class="ident">E</span>,
+    <span class="doccomment">/// The right hand side of the binary operator.</span>
     <span class="kw">pub</span> <span class="ident">rhs</span>: <span class="ident">E</span>,
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">mkop</span> {
     ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">op_name</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">binop</span>:<span class="ident">path</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
     $(
+        <span class="doccomment">/// Creates a binary expression with the given operator.</span>
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">op_name</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span><span class="op">&gt;</span>(<span class="ident">lhs</span>: <span class="ident">T</span>, <span class="ident">rhs</span>: <span class="ident">U</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
         <span class="kw">where</span>
             <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>,
@@ -337,9 +351,12 @@
     }
 }
 
+<span class="doccomment">/// A unary expression.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Hash</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">UnaryExpr</span><span class="op">&lt;</span><span class="ident">E</span>: <span class="ident">RcExpression</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// The unary operator.</span>
     <span class="kw">pub</span> <span class="ident">op</span>: <span class="ident">UnaryOperator</span>,
+    <span class="doccomment">/// The expression the unary operator applies to.</span>
     <span class="kw">pub</span> <span class="ident">rhs</span>: <span class="ident">E</span>,
 }
 
@@ -347,6 +364,7 @@
 <span class="kw">where</span>
     <span class="ident">E</span>: <span class="ident">RcExpression</span>,
 {
+    <span class="doccomment">/// Creates a negation of an expression.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">negate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">expr</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>,

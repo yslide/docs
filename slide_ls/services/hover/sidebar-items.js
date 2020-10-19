@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["fmt_asgn_definitions",""],["fmt_hover_info",""],["get_hover_info","Returns hover info for an expression."],["get_tightest_expr",""]],"struct":[["ExprFinder",""]]});
+initSidebarItems({"fn":[["fmt_asgn_definitions",""],["fmt_hover_info",""],["get_hover_info","Returns hover info for an expression."]]});
