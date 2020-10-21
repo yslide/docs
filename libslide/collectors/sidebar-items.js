@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["collect_pat_names","Collects unique pattern names in an pattern expression."],["collect_var_asgns","Collects variable assignments in a program."],["collect_var_names","Collects unique variable names in an expression."]]});

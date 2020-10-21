@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["scan","Scans and tokenizes a string-like slide program."]],"mod":[["types","Definitions of types used in the libslide scanner."]],"struct":[["ScanErrors","Diagnostic errors produced by the scanner."],["ScanResult","Describes the result of tokenizing a slide program."]]});

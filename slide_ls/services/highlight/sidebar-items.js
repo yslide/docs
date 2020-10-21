@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["get_semantic_highlights","Returns semantic highlighting ranges relevant to a position in a document. If the position is over an identifier (variable), all references to that variable are returned. Otherwise, nothing is returned."]]});

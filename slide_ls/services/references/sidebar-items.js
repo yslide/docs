@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ReferenceKind","The kind of a reference."]],"fn":[["get_kinded_references",""],["get_references","Returns references relevant to a position in a document."]],"struct":[["ReferenceFinder",""]]});
